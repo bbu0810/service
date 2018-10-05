@@ -6,4 +6,5 @@ public class GlobalConstants {
     public static String sIMAGE = "";
     public static String sJOB_ID = "";
     public static String sSLEEP = "";
+    public static String sIMAGE_ABSOLUTION_PATH = "";
 }
