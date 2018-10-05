@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements Constants{
         whatsappIntent.putExtra("jid", TEST_PHONENUMBER + "@s.whatsapp.net");
         whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         try {
-            startActivity(whatsappIntent);
+            startActivityForResult(whatsappIntent, REQUEST_PICK_CONTACT);
         } catch (Exception ex) {
             Toast.makeText(MainActivity.this, NOT_INSTALLED, Toast.LENGTH_LONG).show();
         }
@@ -134,23 +134,26 @@ public class MainActivity extends AppCompatActivity implements Constants{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        AAInterface getReportInterface = new AAInterface() {
-            @Override
-            public void getOrderListSuccess(String resphoneMessage) {
-                Toast.makeText(MainActivity.this, resphoneMessage, Toast.LENGTH_LONG).show();
-            }
+        if (requestCode == REQUEST_PICK_CONTACT) {
+            AAInterface getReportInterface = new AAInterface() {
+                @Override
+                public void getOrderListSuccess(String resphoneMessage) {
+                    Toast.makeText(MainActivity.this, resphoneMessage, Toast.LENGTH_LONG).show();
+                }
 
-            @Override
-            public void getOrderListFail(String resphoneMessage) {
+                @Override
+                public void getOrderListFail(String resphoneMessage) {
 
-            }
+                }
 
-            @Override
-            public void getOrderListError() {
+                @Override
+                public void getOrderListError() {
 
-            }
-        };
-        APIs.getOrderList(getReportInterface);
+                }
+            };
+            APIs.reportResult(getReportInterface);
+        }
+
     }
 
     @Override

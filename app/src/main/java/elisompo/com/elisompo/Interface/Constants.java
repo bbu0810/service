@@ -4,10 +4,11 @@ import android.Manifest;
 
 public interface Constants {
 
-    // +++++++++++ URL +++++++++++++ //
+    // +++++++++++ Global +++++++++++++ //
 
     String LOGO_NAME = "Elisompo";
     int REQUEST_EXTERNAL_STORAGE = 1;
+    int REQUEST_PICK_CONTACT = 2;
     String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -19,7 +20,8 @@ public interface Constants {
 
     String BASIC_URL = "http://wabot.wnets.net/get_message.php?token=jytb7g8vi8i";
 //    String REPORT_URL = "http://wabot.wnets.net/report_job.php";
-    String REPORT_URL = "http://wabot.wnets.net/get_message.php?token=jytb7g8vi8i";
+    String REPORT_URL = "http://wabot.wnets.net/report_job.php?token=jytb7g8vi8i&job_id=123";
+
     // +++++++++++ PARAMETERS +++++++++++++ //
 
     String PHONE = "phone";
