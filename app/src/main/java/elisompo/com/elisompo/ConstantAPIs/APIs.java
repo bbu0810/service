@@ -11,7 +11,7 @@ import elisompo.com.elisompo.Interface.Constants;
 
 public class APIs implements Constants{
     public static void getOrderList(AAInterface aaInterface){
-        ConnectToServer connectToServer = new ConnectToServer();
+        ConnectToServer connectToServer = new ConnectToServer(aaInterface);
         connectToServer.execute(BASIC_URL);
     }
 

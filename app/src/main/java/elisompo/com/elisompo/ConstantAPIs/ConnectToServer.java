@@ -11,21 +11,28 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 
+import elisompo.com.elisompo.Interface.AAInterface;
 import elisompo.com.elisompo.Interface.Constants;
 
 public class ConnectToServer extends AsyncTask<String, Void, String> implements Constants {
 
     HttpClient httpClient;
     HashMap<String, String> mParamMap;
+    AAInterface aaInterface;
 
-    public ConnectToServer(HashMap<String, String> mParamMap) {
+    public ConnectToServer(HashMap<String, String> mParamMap, AAInterface aaInterface) {
         this.mParamMap = mParamMap;
+        this.aaInterface = aaInterface;
     }
 
-    public ConnectToServer(){
+    public ConnectToServer(AAInterface aaInterface){
         mParamMap = new HashMap<String, String>();
+        this.aaInterface = aaInterface;
     }
 
     @Override
@@ -55,5 +62,7 @@ public class ConnectToServer extends AsyncTask<String, Void, String> implements 
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
+        aaInterface.getOrderListSuccess(s);
     }
+
 }
