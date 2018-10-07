@@ -2,48 +2,31 @@ package elisompo.com.elisompo;
 
 import android.Manifest;
 import android.accessibilityservice.AccessibilityService;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.net.Uri;
-import android.os.Environment;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URL;
-import java.util.Calendar;
-import java.util.Date;
+import java.io.DataOutputStream;
 
 import elisompo.com.elisompo.ConstantAPIs.APIs;
 import elisompo.com.elisompo.Interface.AAInterface;
 import elisompo.com.elisompo.Interface.Constants;
 import elisompo.com.elisompo.Interface.GlobalConstants;
-import elisompo.com.elisompo.Service.WhatsappAccessibilityService;
-
-import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
 
 public class MainActivity extends AppCompatActivity implements Constants{
 
@@ -65,12 +48,7 @@ public class MainActivity extends AppCompatActivity implements Constants{
                     GlobalConstants.sIMAGE = jsonObject.getString(IMAGE);
                     GlobalConstants.sJOB_ID = jsonObject.getString(JOB_ID);
                     GlobalConstants.sSLEEP = jsonObject.getString(SLEEP);
-                    if (!isAccessibilityOn (MainActivity.this, WhatsappAccessibilityService.class)) {
-                        Intent intent = new Intent (Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                        MainActivity.this.startActivity (intent);
-                    }
-                    Intent intent = new Intent (Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                    MainActivity.this.startActivity (intent);
+                    checkPermission();
                 }catch (Exception error){
                     error.printStackTrace();
                 }
@@ -129,27 +107,17 @@ public class MainActivity extends AppCompatActivity implements Constants{
         String path = GlobalConstants.sIMAGE_ABSOLUTION_PATH;
         Uri uri = Uri.parse(path);
 
-        String phone = "79149649029";
-        Uri uri1 = Uri.parse("smsto:" + phone);
-        Intent i = new Intent(Intent.ACTION_SEND, uri1);
-        i.putExtra("sms_body", phone);
-        i.putExtra(Intent.EXTRA_TEXT, GlobalConstants.sTEXT);
-        i.putExtra("chat",true);
-        i.setPackage("com.whatsapp");
-
-
-
         Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
         whatsappIntent.setType("text/plain");
         whatsappIntent.setPackage("com.whatsapp");
         whatsappIntent.putExtra(Intent.EXTRA_TEXT, GlobalConstants.sTEXT);
         whatsappIntent.putExtra(Intent.EXTRA_STREAM, uri);
         whatsappIntent.setType("image/*");
-        whatsappIntent.putExtra("jid", GlobalConstants.sPHONE + "@s.whatsapp.net");
+        whatsappIntent.putExtra("jid", TEST_PHONENUMBER + "@s.whatsapp.net");
         whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         try {
- //           startActivityForResult(whatsappIntent, REQUEST_PICK_CONTACT);
-            startActivity(i);
+           startActivityForResult(whatsappIntent, REQUEST_PICK_CONTACT);
+            onTrigerTouchEvent();
         } catch (Exception ex) {
             Toast.makeText(MainActivity.this, NOT_INSTALLED, Toast.LENGTH_LONG).show();
         }
@@ -188,29 +156,18 @@ public class MainActivity extends AppCompatActivity implements Constants{
         }
     }
 
-    private boolean isAccessibilityOn (Context context, Class<? extends AccessibilityService> clazz) {
-        int accessibilityEnabled = 0;
-        final String service = context.getPackageName () + "/" + clazz.getCanonicalName ();
-        try {
-            accessibilityEnabled = Settings.Secure.getInt (context.getApplicationContext ().getContentResolver (), Settings.Secure.ACCESSIBILITY_ENABLED);
-        } catch (Settings.SettingNotFoundException ignored) {  }
-
-        TextUtils.SimpleStringSplitter colonSplitter = new TextUtils.SimpleStringSplitter (':');
-
-        if (accessibilityEnabled == 1) {
-            String settingValue = Settings.Secure.getString (context.getApplicationContext ().getContentResolver (), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
-            if (settingValue != null) {
-                colonSplitter.setString (settingValue);
-                while (colonSplitter.hasNext ()) {
-                    String accessibilityService = colonSplitter.next ();
-
-                    if (accessibilityService.equalsIgnoreCase (service)) {
-                        return true;
-                    }
-                }
-            }
+    public void onTrigerTouchEvent(){
+        try{
+            Process process = Runtime.getRuntime().exec("su");
+            DataOutputStream os = new DataOutputStream(process.getOutputStream());
+            String cmd = "/system/bin/input tap 100 200\n";
+            os.writeBytes(cmd);
+            os.writeBytes("exit\n");
+            os.flush();
+            os.close();
+            process.waitFor();
+        } catch (Exception e){
+            e.printStackTrace();
         }
-
-        return false;
     }
 }
